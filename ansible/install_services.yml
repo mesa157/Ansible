@@ -1,0 +1,33 @@
+---
+- name: Manage Services
+  hosts: all
+  become: true
+  vars:
+    services:
+      - name: httpd
+        state: started
+        enabled: true
+      - name: mysql
+        state: started
+        enabled: true
+      - name: postgresql
+        state: started
+        enabled: true
+      - name: redis
+        state: started
+        enabled: true
+      - name: memcached
+        state: started
+        enabled: true
+      - name: mongodb
+        state: started
+        enabled: true
+
+  tasks:
+  - name: Install and enable services
+    service:
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+      enabled: "{{ item.enabled }}"
+    with_items: "{{ services }}"
+
