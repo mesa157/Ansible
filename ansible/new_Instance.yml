@@ -1,0 +1,39 @@
+---
+- name: Provision new Linux server
+  hosts: all
+  become: true
+  vars:
+    hostname: myserver.example.com # Variable to define hostname
+    network_config:
+      - name: eth0
+        address: 192.168.0.10
+        netmask: 255.255.255.0
+        gateway: 192.168.0.1  # Variable to define network configuration
+    packages:
+      - httpd
+      - mysql
+      - postgresql
+      - openssh-server  # Variable to define packages to be installed
+  tasks:
+  - name: Configure hostname
+    hostname:
+      name: "{{ hostname }}" # This module sets the hostname of the server
+
+  - name: Configure network interfaces
+    network_interface:
+      name: "{{ item.name }}"
+      address: "{{ item.address }}"
+      netmask: "{{ item.netmask }}"
+      gateway: "{{ item.gateway }}"
+    with_items: "{{ network_config }}" # This module is used to configure the network interfaces using the network_config variable
+
+  - name: Update package repositories
+    apt:
+      update_cache: true # This module updates the package repositories to ensure that the latest packages are installed
+
+  - name: Install packages
+    apt:
+      name: "{{ packages }}"
+      state: present # This module installs the packages specified in the packages variable.
+
+
